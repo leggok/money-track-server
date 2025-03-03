@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { PORT, DB_NAME } from "./config.js";
+import { PORT } from "./config";
+import { connectPostgres, sequelize } from "./db/postgres";
 
 const app = express();
-const port = PORT;
 
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
@@ -30,6 +30,19 @@ app.get("/", (req: Request, res: Response) => {
 	res.send("Hello, world!");
 });
 
-app.listen(port, () => {
-	console.log(`Server running at http://localhost:${port}`);
-});
+(async () => {
+	try {
+		console.log("Starting server...");
+
+		await connectPostgres();
+
+		await sequelize.sync({ alter: true });
+		console.log("PostgreSQL tables synchronized!");
+
+		app.listen(PORT, () => {
+			console.log(`Server started on port ${PORT}`);
+		});
+	} catch (error) {
+		console.error("Error during server initialization:", error);
+	}
+})();
