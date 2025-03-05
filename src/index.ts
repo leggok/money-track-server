@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { PORT } from "./config";
 import { connectPostgres, sequelize } from "./db/postgres";
-import { isTableExistAndNotEmpty, createDefaultData } from "./dbHelpers";
+import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers";
 
 const app = express();
 

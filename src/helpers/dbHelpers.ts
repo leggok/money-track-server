@@ -1,7 +1,7 @@
-import { sequelize } from "./db/postgres";
+import { sequelize } from "../db/postgres";
 import { QueryTypes } from "sequelize";
-import User from "./models/User";
-import { defaultUserData } from "./db/defaultData";
+import User from "../models/User";
+import { generateDefaultUserData } from "../db/defaultData";
 
 export async function tableExist(tableName: string): Promise<boolean> {
 	const result = await sequelize.getQueryInterface().showAllTables();
@@ -36,8 +36,9 @@ export async function isTableExistAndNotEmpty(tableName: string) {
 
 export async function createDefaultData() {
 	try {
+		const userData = await generateDefaultUserData();
 		const user = {
-			...defaultUserData,
+			...userData,
 		};
 
 		await User.create(user);
