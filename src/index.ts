@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { PORT } from "./config";
 import { connectPostgres, sequelize } from "./db/postgres";
+import { isTableExistAndNotEmpty, createDefaultData } from "./dbHelpers";
 
 const app = express();
 
@@ -35,6 +36,11 @@ app.get("/", (req: Request, res: Response) => {
 		console.log("Starting server...");
 
 		await connectPostgres();
+		const tableExist = await isTableExistAndNotEmpty("Users");
+
+		if (!tableExist) {
+			await createDefaultData();
+		}
 
 		await sequelize.sync({ alter: true });
 		console.log("PostgreSQL tables synchronized!");
