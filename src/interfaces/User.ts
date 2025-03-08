@@ -1,0 +1,9 @@
+export interface UserType {
+	first_name: string;
+	last_name?: string;
+	username: string;
+	refresh_token?: string;
+	avatar?: string;
+	email: string;
+	password: string;
+}

@@ -1,5 +1,6 @@
 import User from "../models/User";
 import { hashPassword } from "../utils/passwordUtils";
+import { UserType } from "../interfaces/User";
 
 class UserService {
 	static async findByEmail(email: string) {
@@ -10,7 +11,7 @@ class UserService {
 			};
 		}
 		try {
-			const user = await User.findOne({ where: { email } });
+			const user = (await User.findOne({ where: { email } })) as UserType | null;
 
 			if (!user) {
 				return {
