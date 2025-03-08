@@ -1,9 +1,11 @@
-import express, { Request, Response } from "express";
+import express, { Router, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { PORT } from "./config";
 import { connectPostgres, sequelize } from "./db/postgres";
 import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers";
+
+import authRoutes from "./routes/auth";
 
 const app = express();
 
@@ -27,9 +29,11 @@ app.use(
 	})
 );
 
-app.get("/", (req: Request, res: Response) => {
-	res.send("Hello, world!");
-});
+const router = Router();
+
+router.use(authRoutes);
+
+app.use("/api", router);
 
 (async () => {
 	try {
