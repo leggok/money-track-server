@@ -65,7 +65,7 @@ class UserService {
 		}
 	}
 
-	static async create(firstName: string, lastName: string, username: string, email: string, password: string) {
+	static async create(firstName: string, lastName: string, username: string, email: string, password: string, refresh_token: string) {
 		const existUser = await UserService.findByEmail(email);
 		if (existUser.success) {
 			return {
@@ -82,6 +82,7 @@ class UserService {
 				last_name: lastName,
 				email,
 				password: hashedPassword,
+				refresh_token,
 			});
 
 			return {
