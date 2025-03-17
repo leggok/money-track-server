@@ -30,7 +30,7 @@ const Transaction = sequelize.define(
 		currency_id: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: "Currencies", // Назва таблиці currency
+				model: "Currency", // Назва таблиці currency
 				key: "id", // Поле, на яке посилається зовнішній ключ
 			},
 		},
@@ -39,11 +39,5 @@ const Transaction = sequelize.define(
 		timestamps: true,
 	}
 );
-
-Transaction.belongsTo(Currency, { foreignKey: "currency_id" });
-Currency.hasMany(Transaction, { foreignKey: "currency_id" });
-
-Transaction.belongsTo(Category, { foreignKey: "category_id" });
-Category.hasMany(Transaction, { foreignKey: "category_id" });
 
 export default Transaction;

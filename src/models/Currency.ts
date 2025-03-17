@@ -42,6 +42,4 @@ const Currency = sequelize.define(
 	}
 );
 
-Currency.hasMany(Transaction, { foreignKey: "currency_id" });
-
 export default Currency;

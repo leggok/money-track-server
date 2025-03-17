@@ -1,6 +1,6 @@
 import { sequelize } from "../db/postgres";
 import { QueryTypes } from "sequelize";
-import User from "../models/User";
+import { User } from "../models";
 import { generateDefaultUserData } from "../db/defaultData";
 
 export async function tableExist(tableName: string): Promise<boolean> {
@@ -35,6 +35,20 @@ export async function isTableExistAndNotEmpty(tableName: string) {
 }
 
 export async function createDefaultData() {
+	try {
+		const userData = await generateDefaultUserData();
+		const user = {
+			...userData,
+		};
+
+		await User.create(user);
+	} catch (error) {
+		console.error("Error while creating default user data: ", error);
+	}
+}
+// TODO: Finish fixing
+// FIXME: Need to create category table by default because of error in associations with transactions
+export async function createDefaultCategoryData() {
 	try {
 		const userData = await generateDefaultUserData();
 		const user = {

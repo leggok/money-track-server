@@ -1,4 +1,4 @@
-import User from "../models/User";
+import { User } from "../models";
 import { hashPassword } from "../utils/passwordUtils";
 import { UserType } from "../interfaces/User";
 

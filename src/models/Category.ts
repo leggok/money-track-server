@@ -29,6 +29,4 @@ const Category = sequelize.define(
 	}
 );
 
-Category.hasMany(Transaction, { foreignKey: "category_id" });
-
 export default Category;

@@ -6,6 +6,7 @@ import { connectPostgres, sequelize } from "./db/postgres";
 import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers";
 
 import authRoutes from "./routes/auth";
+import categoryRoutes from "./routes/category";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(
 const router = Router();
 
 router.use(authRoutes);
+router.use(categoryRoutes);
 
 app.use("/api", router);
 
@@ -40,9 +42,15 @@ app.use("/api", router);
 		console.log("Starting server...");
 
 		await connectPostgres();
-		const tableExist = await isTableExistAndNotEmpty("Users");
+		const usersTableExist = await isTableExistAndNotEmpty("Users");
 
-		if (!tableExist) {
+		if (!usersTableExist) {
+			await createDefaultData();
+		}
+
+		const categoriesTableExist = await isTableExistAndNotEmpty("Categories");
+
+		if (!categoriesTableExist) {
 			await createDefaultData();
 		}
 
