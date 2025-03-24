@@ -18,3 +18,5 @@ export const DB_PORT = Number(process.env.DB_PORT);
 export const DEFAULT_USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD;
 
 export const DEFAULT_USER_EMAIL = process.env.DEFAULT_USER_EMAIL;
+
+export const PATH_TO_UPLOADS_FOLDER = process.env.PATH_TO_UPLOADS_FOLDER;

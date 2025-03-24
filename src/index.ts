@@ -7,6 +7,7 @@ import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers"
 
 import authRoutes from "./routes/auth";
 import categoryRoutes from "./routes/category";
+import uploadRoutes from "./routes/upload";
 
 const app = express();
 
@@ -34,6 +35,7 @@ const router = Router();
 
 router.use(authRoutes);
 router.use(categoryRoutes);
+router.use(uploadRoutes);
 
 app.use("/api", router);
 
