@@ -48,12 +48,6 @@ app.use("/api", router);
 			await createDefaultData();
 		}
 
-		const categoriesTableExist = await isTableExistAndNotEmpty("Categories");
-
-		if (!categoriesTableExist) {
-			await createDefaultData();
-		}
-
 		await sequelize.sync({ alter: true });
 		console.log("PostgreSQL tables synchronized!");
 

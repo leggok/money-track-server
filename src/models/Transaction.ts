@@ -23,14 +23,14 @@ const Transaction = sequelize.define(
 		category_id: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: "Category",
+				model: Category,
 				key: "id",
 			},
 		},
 		currency_id: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: "Currency", // Назва таблиці currency
+				model: Currency, // Назва таблиці currency
 				key: "id", // Поле, на яке посилається зовнішній ключ
 			},
 		},
