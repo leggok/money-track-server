@@ -29,4 +29,23 @@ export class CategoriesController {
 			return res.status(500).json({ message: "Internal Server Error", success: false });
 		}
 	}
+
+	static async getAll(req: Request, res: Response): Promise<any> {
+		try {
+			const categories = await CategoryService.findAll();
+
+			if (!categories.success) {
+				return res.status(400).json({ message: categories.message, success: false });
+			}
+
+			return res.status(201).json({
+				message: categories.message,
+				success: true,
+				categories: categories.categories,
+			});
+		} catch (error) {
+			console.error("Get all categories error:", error);
+			return res.status(500).json({ message: "Internal Server Error", success: false });
+		}
+	}
 }

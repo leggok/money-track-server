@@ -63,6 +63,31 @@ class CategoryService {
 		}
 	}
 
+	static async findAll() {
+		try {
+			const categories = await Category.findAll();
+
+			if (!categories) {
+				return {
+					message: "Categories not found",
+					success: false,
+				};
+			}
+
+			return {
+				categories,
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error in findAll", error);
+			return {
+				message: "Error in findAll",
+				error,
+				success: false,
+			};
+		}
+	}
+
 	static async create(title: string, icon: string, color: string) {
 		const existCategory = await this.findByTitle(title);
 		if (existCategory.success) {
