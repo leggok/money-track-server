@@ -13,7 +13,7 @@ const Transaction = sequelize.define(
 			allowNull: false,
 		},
 		value: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.DECIMAL(10, 2),
 			allowNull: false,
 		},
 		description: {
@@ -33,6 +33,16 @@ const Transaction = sequelize.define(
 				model: Currency, // Назва таблиці currency
 				key: "id", // Поле, на яке посилається зовнішній ключ
 			},
+		},
+		type: {
+			type: DataTypes.ENUM("expense", "income"),
+			allowNull: false,
+			defaultValue: "expense",
+		},
+		timestamp: {
+			type: DataTypes.DATE,
+			allowNull: false,
+			defaultValue: DataTypes.NOW,
 		},
 	},
 	{

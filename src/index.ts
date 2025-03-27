@@ -8,6 +8,10 @@ import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers"
 import authRoutes from "./routes/auth";
 import categoryRoutes from "./routes/category";
 import uploadRoutes from "./routes/upload";
+import transactionRoutes from "./routes/transaction";
+import currencyRoutes from "./routes/currency";
+
+import { createDefaultUsers, createDefaultCurrencies, createDefaultCategories } from "./db/defaultData";
 
 const app = express();
 
@@ -36,6 +40,8 @@ const router = Router();
 router.use(authRoutes);
 router.use(categoryRoutes);
 router.use(uploadRoutes);
+router.use(transactionRoutes);
+router.use(currencyRoutes);
 
 app.use("/api", router);
 
@@ -44,10 +50,17 @@ app.use("/api", router);
 		console.log("Starting server...");
 
 		await connectPostgres();
-		const usersTableExist = await isTableExistAndNotEmpty("Users");
+		const tablesToCheck = [
+			{ name: "Users", createFn: createDefaultUsers },
+			{ name: "Currencies", createFn: createDefaultCurrencies },
+			{ name: "Categories", createFn: createDefaultCategories },
+		];
 
-		if (!usersTableExist) {
-			await createDefaultData();
+		for (const { name, createFn } of tablesToCheck) {
+			const tableExists = await isTableExistAndNotEmpty(name);
+			if (!tableExists) {
+				await createFn();
+			}
 		}
 
 		await sequelize.sync({ alter: true });
