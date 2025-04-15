@@ -1,5 +1,6 @@
 import { Transaction } from "../models";
 import type { Transaction as TransactionType } from "../interfaces";
+import UserService from "./UsersService";
 
 class TransactionService {
 	static async findById(id: number) {
@@ -71,7 +72,7 @@ class TransactionService {
 			});
 
 			if (transaction) {
-				// await UserService.updateTotalBudget(transaction.user_id, value, type);
+				await UserService.updateTotalBudget(user_id, value, type);
 			}
 
 			return {

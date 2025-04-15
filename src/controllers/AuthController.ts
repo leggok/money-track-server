@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import UserService from "../services/UserService";
+import UserService from "../services/UsersService";
 import { comparePasswords } from "../utils/passwordUtils";
 import { UserResponse } from "../interfaces/index";
 import { JWT_KEY } from "../config";

@@ -9,4 +9,5 @@ export interface UserType {
 	id: number;
 	updatedAt?: Date;
 	createdAt?: Date;
+	total_budget: number;
 }

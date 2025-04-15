@@ -1,6 +1,6 @@
 import { DEFAULT_USER_PASSWORD, DEFAULT_USER_EMAIL } from "../config";
 import { hashPassword } from "../utils/passwordUtils";
-import UserService from "../services/UserService";
+import UserService from "../services/UsersService";
 import CurrencyService from "../services/CurrencyService";
 import CategoryService from "../services/CategoryService";
 

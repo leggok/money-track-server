@@ -10,6 +10,7 @@ import categoryRoutes from "./routes/category";
 import uploadRoutes from "./routes/upload";
 import transactionRoutes from "./routes/transaction";
 import currencyRoutes from "./routes/currency";
+import userRoutes from "./routes/user";
 
 import { createDefaultUsers, createDefaultCurrencies, createDefaultCategories } from "./db/defaultData";
 
@@ -42,6 +43,7 @@ router.use(categoryRoutes);
 router.use(uploadRoutes);
 router.use(transactionRoutes);
 router.use(currencyRoutes);
+router.use(userRoutes);
 
 app.use("/api", router);
 

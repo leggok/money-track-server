@@ -101,6 +101,56 @@ class UserService {
 			};
 		}
 	}
+
+	static async updateTotalBudget(user_id: number, value: number, type: "income" | "expense") {
+		try {
+			const userInstance = await User.findByPk(user_id);
+			if (!userInstance) throw new Error("User not found");
+
+			// Якщо потрібно: отримаємо чистий об'єкт без методів:
+			const user: UserType = userInstance.get({ plain: true });
+			const currentBudget = Number(user.total_budget);
+			const transactionValue = Number(value);
+			let newBudget: number;
+
+			if (type === "income") {
+				newBudget = currentBudget + transactionValue;
+			} else {
+				newBudget = currentBudget - transactionValue;
+			}
+
+			await userInstance.update({ total_budget: newBudget });
+
+			return {
+				message: "Total budget updated successfully",
+				success: true,
+				user: {
+					...user,
+					total_budget: newBudget,
+				},
+			};
+		} catch (error) {
+			console.error("Error updating total budget:", error);
+			return {
+				message: "Failed to update total budget",
+				error,
+				success: false,
+			};
+		}
+	}
+
+	static async getBalance(user_id: number) {
+		const userInstance = await User.findByPk(user_id);
+		if (!userInstance) throw new Error("User not found");
+
+		const user: UserType = userInstance.get({ plain: true });
+
+		return {
+			message: "Total budget getted successfully",
+			success: true,
+			balance: user.total_budget,
+		};
+	}
 }
 
 export default UserService;
