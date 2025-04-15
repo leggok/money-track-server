@@ -4,7 +4,7 @@ import TransactionService from "../services/TransactionService";
 export class TransactionsController {
 	static async add(req: Request, res: Response): Promise<any> {
 		try {
-			const { value, description, category_id, currency_id, type, timestamp } = req.body;
+			const { value, description, category_id, currency_id, type, timestamp, user_id } = req.body;
 
 			if (!value) {
 				return res.status(400).json({
@@ -13,7 +13,7 @@ export class TransactionsController {
 				});
 			}
 
-			const createdTransaction = await TransactionService.add({ value, description, category_id, currency_id, type, timestamp });
+			const createdTransaction = await TransactionService.add({ value, description, category_id, currency_id, type, timestamp, user_id });
 
 			if (!createdTransaction.success) {
 				return res.status(400).json({ message: createdTransaction.message, success: false });
@@ -32,7 +32,8 @@ export class TransactionsController {
 
 	static async getAll(req: Request, res: Response): Promise<any> {
 		try {
-			const transactions = await TransactionService.findAll();
+			const user_id = Number(req.query.user_id);
+			const transactions = await TransactionService.findAllByUserId(user_id);
 
 			if (!transactions.success) {
 				return res.status(400).json({ message: transactions.message, success: false });

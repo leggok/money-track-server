@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../db/postgres";
 import Currency from "./Currency";
 import Category from "./Category";
+import User from "./User";
 
 const Transaction = sequelize.define(
 	"Transaction",
@@ -32,6 +33,14 @@ const Transaction = sequelize.define(
 			references: {
 				model: Currency, // Назва таблиці currency
 				key: "id", // Поле, на яке посилається зовнішній ключ
+			},
+		},
+		user_id: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			references: {
+				model: User,
+				key: "id",
 			},
 		},
 		type: {

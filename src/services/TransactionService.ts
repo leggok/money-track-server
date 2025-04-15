@@ -58,7 +58,7 @@ class TransactionService {
 		}
 	}
 
-	static async add({ value, description, category_id, currency_id, type, timestamp }: TransactionType) {
+	static async add({ value, description, category_id, currency_id, type, timestamp, user_id }: TransactionType) {
 		try {
 			const transaction = await Transaction.create({
 				value,
@@ -67,7 +67,12 @@ class TransactionService {
 				currency_id,
 				type,
 				timestamp,
+				user_id,
 			});
+
+			if (transaction) {
+				// await UserService.updateTotalBudget(transaction.user_id, value, type);
+			}
 
 			return {
 				message: "Transaction created successfully",
@@ -78,6 +83,31 @@ class TransactionService {
 			console.error("Error while creating transaction:", error);
 			return {
 				message: "Failed to create transaction",
+				error,
+				success: false,
+			};
+		}
+	}
+
+	static async findAllByUserId(user_id: number) {
+		try {
+			const transactions = await Transaction.findAll({ where: { user_id } });
+
+			if (!transactions) {
+				return {
+					message: "Transactions not found",
+					success: false,
+				};
+			}
+
+			return {
+				transactions,
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error in findAll", error);
+			return {
+				message: "Error in findAll",
 				error,
 				success: false,
 			};

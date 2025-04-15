@@ -38,6 +38,11 @@ const User = sequelize.define(
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
+		total_budget: {
+			type: DataTypes.DECIMAL(10, 2),
+			allowNull: false,
+			defaultValue: 0,
+		},
 	},
 	{
 		timestamps: true,

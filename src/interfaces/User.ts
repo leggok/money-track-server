@@ -5,6 +5,8 @@ export interface UserType {
 	refresh_token?: string;
 	avatar?: string;
 	email: string;
-	password: string;
+	password?: string;
 	id: number;
+	updatedAt?: Date;
+	createdAt?: Date;
 }

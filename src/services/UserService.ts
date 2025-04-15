@@ -20,6 +20,8 @@ class UserService {
 				};
 			}
 
+			console.log("user", user);
+
 			return {
 				user,
 				success: true,

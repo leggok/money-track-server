@@ -6,4 +6,5 @@ export interface Transaction {
 	currency_id: number;
 	type: "expense" | "income";
 	timestamp?: string;
+	user_id: number;
 }

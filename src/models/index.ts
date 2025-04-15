@@ -10,4 +10,7 @@ Currency.hasMany(Transaction, { foreignKey: "currency_id" });
 Transaction.belongsTo(Category, { foreignKey: "category_id" });
 Category.hasMany(Transaction, { foreignKey: "category_id" });
 
+Transaction.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Transaction, { foreignKey: "user_id" });
+
 export { Currency, Transaction, Category, User };

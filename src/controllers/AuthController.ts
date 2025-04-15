@@ -45,7 +45,6 @@ export class AuthController {
 				return res.status(400).json({ message: result.message, success: false });
 			}
 
-
 			return res.status(201).json({
 				message: result.message,
 				success: true,
@@ -76,16 +75,11 @@ export class AuthController {
 
 			const result: UserResponse = await UserService.findByEmail(email);
 
-			if (!result.success) {
-				return res.status(400).json({ message: result.message, success: false });
-			}
-
-			if (!result.user) {
-				return res.status(404).json({ message: "User not found", success: false });
-			}
-
-			if (!result.user.password) {
-				return res.status(404).json({ message: "User has not password", success: false });
+			if (!result.success || !result.user || !result.user.password) {
+				return res.status(401).json({
+					message: "Invalid credentials",
+					success: false,
+				});
 			}
 
 			const isPasswordMatch = await comparePasswords(password, result.user.password);
@@ -94,6 +88,8 @@ export class AuthController {
 				res.cookie("refresh_token", result.user.refresh_token, {
 					httpOnly: true,
 					maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+					secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+					sameSite: "strict",
 				});
 
 				if (!JWT_KEY) {
@@ -103,22 +99,32 @@ export class AuthController {
 
 				res.cookie("access_token", access_token, {
 					httpOnly: true,
-					maxAge: 15 * 60 * 1000, // 30 minutes
+					maxAge: 15 * 60 * 1000, // 15 minutes
+					secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+					sameSite: "strict",
 				});
 
+				const cleanedUser = {
+					id: result.user.id,
+					firstName: result.user.first_name,
+					lastName: result.user.last_name,
+					username: result.user.username,
+					email: result.user.email,
+				};
+
 				return res.status(200).json({
-					message: result.message,
+					message: "Login successful",
 					success: true,
-					user: result.user,
+					user: cleanedUser,
 				});
 			} else {
-				return res.status(200).json({
-					message: "Wrong email or password",
+				return res.status(401).json({
+					message: "Invalid credentials",
 					success: false,
 				});
 			}
 		} catch (error) {
-			console.error("Registration error:", error);
+			console.error("Login error:", error);
 			return res.status(500).json({ message: "Internal Server Error", success: false });
 		}
 	}
