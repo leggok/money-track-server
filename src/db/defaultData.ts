@@ -29,7 +29,7 @@ export const generateDefaultUserData = async (): Promise<DefaultUserData> => {
 export async function createDefaultUsers() {
 	try {
 		const userData = await generateDefaultUserData();
-		await UserService.create(userData.first_name, userData.last_name, userData.username, userData.email, userData.password, userData.refresh_token);
+		await UserService.create(userData.first_name, userData.last_name, userData.username, userData.email, userData.password);
 		console.log("Default user created.");
 	} catch (error) {
 		console.error("Error while creating default users:", error);

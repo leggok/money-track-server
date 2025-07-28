@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import UsersService from "../services/UsersService";
+import UserService from "../services/UsersService";
 
 export default class UsersController {
 	static async getBalance(req: Request, res: Response): Promise<any> {
 		try {
 			const user_id = Number(req.params.user_id);
-			const balance = await UsersService.getBalance(user_id);
+			const balance = await UserService.getBalance(user_id);
 
 			if (!balance.success) {
 				return res.status(400).json({ message: balance.message, success: false });

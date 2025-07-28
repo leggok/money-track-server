@@ -1,6 +1,7 @@
 import { User } from "../models";
 import { hashPassword } from "../utils/passwordUtils";
 import { UserType } from "../interfaces/User";
+import { CreateUserResponse } from "../interfaces/Responses";
 
 class UserService {
 	static async findByEmail(email: string) {
@@ -67,25 +68,29 @@ class UserService {
 		}
 	}
 
-	static async create(firstName: string, lastName: string, username: string, email: string, password: string, refresh_token: string) {
+	static async create(first_name: string, last_name: string, username: string, email: string, password: string): Promise<CreateUserResponse> {
 		const existUser = await UserService.findByEmail(email);
+
 		if (existUser.success) {
 			return {
 				message: "User with this email already exists",
 				success: false,
+				user: null,
 			};
 		}
 
 		try {
 			const hashedPassword = await hashPassword(password);
-			const user = await User.create({
-				username,
-				first_name: firstName,
-				last_name: lastName,
-				email,
-				password: hashedPassword,
-				refresh_token,
-			});
+
+			const user = (
+				await User.create({
+					username,
+					first_name,
+					last_name,
+					email,
+					password: hashedPassword,
+				})
+			).get({ plain: true }) as UserType;
 
 			return {
 				message: "User created successfully",
@@ -98,6 +103,7 @@ class UserService {
 				message: "Failed to create user",
 				error,
 				success: false,
+				user: null,
 			};
 		}
 	}

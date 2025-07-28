@@ -1,54 +1,62 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+// jwt import removed, handled in AuthService
 import UserService from "../services/UsersService";
-import { comparePasswords } from "../utils/passwordUtils";
+import { comparePasswords, hashPassword } from "../utils/passwordUtils";
 import { UserResponse } from "../interfaces/index";
 import { JWT_KEY } from "../config";
+import { User } from "../models";
+import AuthService from "../services/AuthService";
 export class AuthController {
 	static async registration(req: Request, res: Response): Promise<any> {
 		try {
-			const { firstName, lastName, username, email, password } = req.body;
+			const { first_name, last_name, username, email, password } = req.body;
 
-			if (!firstName) {
-				return res.status(400).json({
-					message: "First name is required",
-					success: false,
-				});
+			const newUser = await UserService.create(first_name, last_name, username, email, password);
+
+			if (!newUser.success || !newUser.user) {
+				return res.status(400).json({ message: newUser.message, success: false });
 			}
-			if (!username) {
-				return res.status(400).json({
-					message: "Username is required",
-					success: false,
-				});
-			}
-			if (!email) {
-				return res.status(400).json({
-					message: "Email is required",
-					success: false,
-				});
-			}
-			if (!password) {
-				return res.status(400).json({
-					message: "Password is required",
-					success: false,
-				});
-			}
+
+			const userId = newUser.user.id;
 
 			if (!JWT_KEY) {
 				throw new Error("JWT_KEY is not defined");
 			}
 
-			const refreshToken = jwt.sign({ email: email, password: password }, JWT_KEY);
-			const result = await UserService.create(firstName, lastName, username, email, password, refreshToken);
+			const { success, message, data } = AuthService.generateTokens(userId);
 
-			if (!result.success) {
-				return res.status(400).json({ message: result.message, success: false });
+			if (!success || !data) {
+				return res.status(400).json({ message, success: false });
 			}
 
+			const { accessToken, refresh_token } = data;
+
+			const userToUpdate = await UserService.findById(userId);
+
+			if (!userToUpdate.success || !userToUpdate.user) {
+				return res.status(400).json({ message: userToUpdate.message, success: false });
+			}
+
+			// Save refresh token
+			await userToUpdate.user.update({ refresh_token });
+
+			// Send refresh_token as httpOnly cookie
+			res.cookie("refresh_token", refresh_token, {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+				maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			});
+
 			return res.status(201).json({
-				message: result.message,
+				message: "User registered successfully",
 				success: true,
-				user: result.user,
+				user: {
+					id: userId,
+					username,
+					email,
+				},
+				accessToken,
 			});
 		} catch (error) {
 			console.error("Registration error:", error);
@@ -59,19 +67,6 @@ export class AuthController {
 	static async login(req: Request, res: Response): Promise<any> {
 		try {
 			const { email, password } = req.body;
-
-			if (!email) {
-				return res.status(400).json({
-					message: "Email is required",
-					success: false,
-				});
-			}
-			if (!password) {
-				return res.status(400).json({
-					message: "Password is required",
-					success: false,
-				});
-			}
 
 			const result: UserResponse = await UserService.findByEmail(email);
 
@@ -84,23 +79,27 @@ export class AuthController {
 
 			const isPasswordMatch = await comparePasswords(password, result.user.password);
 
-			if (isPasswordMatch) {
-				res.cookie("refresh_token", result.user.refresh_token, {
+			if (!isPasswordMatch) {
+				return res.status(401).json({ message: "Invalid credentials", success: false });
+			} else {
+				const { success: tokenSuccess, message: tokenMsg, data: tokenData } = AuthService.generateTokens(result.user.id);
+				if (!tokenSuccess || !tokenData) {
+					return res.status(400).json({ message: tokenMsg, success: false });
+				}
+
+				const { accessToken, refresh_token } = tokenData;
+
+				await User.update({ refresh_token }, { where: { id: result.user.id } });
+				res.cookie("refresh_token", refresh_token, {
 					httpOnly: true,
-					maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
-					secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+					maxAge: 7 * 24 * 60 * 60 * 1000,
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "strict",
 				});
-
-				if (!JWT_KEY) {
-					throw new Error("JWT_KEY is not defined");
-				}
-				const access_token = jwt.sign({ username: result.user.username, id: result.user.id }, JWT_KEY);
-
-				res.cookie("access_token", access_token, {
+				res.cookie("access_token", accessToken, {
 					httpOnly: true,
-					maxAge: 15 * 60 * 1000, // 15 minutes
-					secure: process.env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+					maxAge: 15 * 60 * 1000,
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "strict",
 				});
 
@@ -116,11 +115,7 @@ export class AuthController {
 					message: "Login successful",
 					success: true,
 					user: cleanedUser,
-				});
-			} else {
-				return res.status(401).json({
-					message: "Invalid credentials",
-					success: false,
+					accessToken,
 				});
 			}
 		} catch (error) {
