@@ -68,6 +68,108 @@ class UserService {
 		}
 	}
 
+	static async findByEmailAndRefreshToken(email: string, refresh_token: string) {
+		if (!email || !refresh_token) {
+			return {
+				message: "Email and refresh token are required",
+				success: false,
+			};
+		}
+		try {
+			const user = await User.findOne({ 
+				where: { 
+					email, 
+					refresh_token 
+				} 
+			}) as UserType | null;
+
+			if (!user) {
+				return {
+					message: "User not found or invalid refresh token",
+					success: false,
+				};
+			}
+
+			return {
+				user,
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error in findByEmailAndRefreshToken", error);
+			return {
+				message: "Error in findByEmailAndRefreshToken",
+				error,
+				success: false,
+			};
+		}
+	}
+
+	static async updateRefreshToken(userId: number, refresh_token: string) {
+		if (!userId || !refresh_token) {
+			return {
+				message: "User ID and refresh token are required",
+				success: false,
+			};
+		}
+		try {
+			const user = await User.findByPk(userId);
+			
+			if (!user) {
+				return {
+					message: "User not found",
+					success: false,
+				};
+			}
+
+			await user.update({ refresh_token });
+
+			return {
+				message: "Refresh token updated successfully",
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error in updateRefreshToken", error);
+			return {
+				message: "Error updating refresh token",
+				error,
+				success: false,
+			};
+		}
+	}
+
+	static async clearRefreshToken(userId: number) {
+		if (!userId) {
+			return {
+				message: "User ID is required",
+				success: false,
+			};
+		}
+		try {
+			const user = await User.findByPk(userId);
+			
+			if (!user) {
+				return {
+					message: "User not found",
+					success: false,
+				};
+			}
+
+			await user.update({ refresh_token: null });
+
+			return {
+				message: "Refresh token cleared successfully",
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error in clearRefreshToken", error);
+			return {
+				message: "Error clearing refresh token",
+				error,
+				success: false,
+			};
+		}
+	}
+
 	static async create(first_name: string, last_name: string, username: string, email: string, password: string): Promise<CreateUserResponse> {
 		const existUser = await UserService.findByEmail(email);
 

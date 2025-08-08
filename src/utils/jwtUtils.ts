@@ -12,3 +12,11 @@ export const signJwt = (userId: number, expiresIn: SignOptions["expiresIn"]) => 
 
 	return token;
 };
+
+export const verifyJwt = (token: string) => {
+	if (!JWT_KEY) {
+		throw new Error("JWT_KEY is not defined");
+	}
+
+	return jwt.verify(token, JWT_KEY);
+};

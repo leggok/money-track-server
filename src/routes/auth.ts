@@ -8,4 +8,10 @@ router.post("/auth/registration", ...registrationValidation(), AuthController.re
 
 router.post("/auth/login", ...loginValidation(), AuthController.login);
 
+router.post("/auth/logout", AuthController.logout);
+
+router.get("/auth/refresh-token", AuthController.refreshAccessToken);
+
+router.get("/auth/check-role", AuthController.checkRole);
+
 export default router;
