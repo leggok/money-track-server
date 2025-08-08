@@ -1,7 +1,9 @@
 import express, { Router, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { PORT } from "./config";
+import fs from "fs";
+import path from "path";
+import { PORT, PATH_TO_UPLOADS_FOLDER } from "./config";
 import { connectPostgres, sequelize } from "./db/postgres";
 import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers";
 
@@ -49,29 +51,53 @@ app.use("/api", router);
 
 (async () => {
 	try {
-		console.log("Starting server...");
+		console.log("🚀 Starting Money Track Server...");
 
+		// Створення папки для завантажень
+		const uploadsDir = path.resolve(PATH_TO_UPLOADS_FOLDER);
+		if (!fs.existsSync(uploadsDir)) {
+			fs.mkdirSync(uploadsDir, { recursive: true });
+			console.log("📁 Created uploads directory");
+		}
+
+		// Підключення до бази даних
 		await connectPostgres();
+		
+		// Синхронізація таблиць
+		await sequelize.sync({ alter: true });
+		console.log("✅ PostgreSQL tables synchronized!");
+
+		// Створення даних за замовчуванням
+		console.log("📊 Checking and creating default data...");
+		
 		const tablesToCheck = [
-			{ name: "Users", createFn: createDefaultUsers },
-			{ name: "Currencies", createFn: createDefaultCurrencies },
-			{ name: "Categories", createFn: createDefaultCategories },
+			{ name: "Users", createFn: createDefaultUsers, description: "Default users" },
+			{ name: "Currencies", createFn: createDefaultCurrencies, description: "Default currencies" },
+			{ name: "Categories", createFn: createDefaultCategories, description: "Default categories" },
 		];
 
-		for (const { name, createFn } of tablesToCheck) {
+		for (const { name, createFn, description } of tablesToCheck) {
+			console.log(`\n🔍 Checking ${description}...`);
 			const tableExists = await isTableExistAndNotEmpty(name);
 			if (!tableExists) {
+				console.log(`📝 Creating ${description}...`);
 				await createFn();
+			} else {
+				console.log(`✅ ${description} already exist.`);
 			}
 		}
 
-		await sequelize.sync({ alter: true });
-		console.log("PostgreSQL tables synchronized!");
+		console.log("\n🎉 Server initialization completed successfully!");
 
 		app.listen(PORT, () => {
-			console.log(`Server started on port ${PORT}`);
+			console.log(`🌐 Server started on port ${PORT}`);
+			console.log(`📋 API available at http://localhost:${PORT}/api`);
+			console.log(`\n📖 Default user credentials:`);
+			console.log(`   Email: admin@example.com`);
+			console.log(`   Password: admin123`);
 		});
 	} catch (error) {
-		console.error("Error during server initialization:", error);
+		console.error("❌ Error during server initialization:", error);
+		process.exit(1);
 	}
 })();

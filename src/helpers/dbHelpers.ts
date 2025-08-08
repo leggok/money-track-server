@@ -19,18 +19,18 @@ export async function isTableExistAndNotEmpty(tableName: string) {
 		if (await tableExist(tableName)) {
 			const empty = await isTableEmpty(tableName);
 			if (empty) {
-				console.log(`Table "${tableName}" is empty`);
+				console.log(`   📭 Table "${tableName}" exists but is empty`);
 				return false;
 			}
-			console.log(`Table "${tableName}" is not empty`);
+			console.log(`   ✅ Table "${tableName}" exists and has data`);
 			return true;
 		} else {
-			console.log(`Table "${tableName}" is not exist`);
+			console.log(`   ❌ Table "${tableName}" does not exist`);
 			return false;
 		}
 	} catch (error) {
-		console.error("Error while checking if table exist and not empty:", error);
-		return true; // return true to avoid duplicate default user
+		console.error(`   ⚠️ Error while checking table "${tableName}":`, error);
+		return false; // return false to allow creation of default data
 	}
 }
 

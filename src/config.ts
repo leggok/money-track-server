@@ -19,7 +19,7 @@ export const DEFAULT_USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD;
 
 export const DEFAULT_USER_EMAIL = process.env.DEFAULT_USER_EMAIL;
 
-export const PATH_TO_UPLOADS_FOLDER = process.env.PATH_TO_UPLOADS_FOLDER;
+export const PATH_TO_UPLOADS_FOLDER = process.env.PATH_TO_UPLOADS_FOLDER || "./uploads";
 
 export const ACCESS_TTL = process.env.ACCESS_TTL;
 
