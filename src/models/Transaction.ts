@@ -5,7 +5,7 @@ import Category from "./Category";
 import User from "./User";
 
 const Transaction = sequelize.define(
-	"Transaction",
+	"transaction",
 	{
 		id: {
 			type: DataTypes.INTEGER,

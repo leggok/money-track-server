@@ -24,3 +24,5 @@ export const PATH_TO_UPLOADS_FOLDER = process.env.PATH_TO_UPLOADS_FOLDER || "./u
 export const ACCESS_TTL = process.env.ACCESS_TTL;
 
 export const REFRESH_TTL = process.env.REFRESH_TTL;
+
+export const CURRENCY_API_KEY = process.env.CURRENCY_API_KEY;

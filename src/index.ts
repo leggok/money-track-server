@@ -6,6 +6,7 @@ import path from "path";
 import { PORT, PATH_TO_UPLOADS_FOLDER } from "./config";
 import { connectPostgres, sequelize } from "./db/postgres";
 import { isTableExistAndNotEmpty, createDefaultData } from "./helpers/dbHelpers";
+import "./models/associations";
 
 import authRoutes from "./routes/auth";
 import categoryRoutes from "./routes/category";

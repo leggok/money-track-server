@@ -55,7 +55,6 @@ export async function createDefaultCurrencies() {
 				code: "USD",
 				symbol: "$",
 				country: "United States",
-				exchange_rate: 1.0,
 				is_main: true,
 			},
 			{
@@ -63,7 +62,6 @@ export async function createDefaultCurrencies() {
 				code: "EUR",
 				symbol: "€",
 				country: "European Union",
-				exchange_rate: 0.85,
 				is_main: false,
 			},
 			{
@@ -71,7 +69,6 @@ export async function createDefaultCurrencies() {
 				code: "UAH",
 				symbol: "₴",
 				country: "Ukraine",
-				exchange_rate: 36.5,
 				is_main: false,
 			}
 		];

@@ -3,7 +3,7 @@ import { sequelize } from "../db/postgres";
 import Transaction from "./Transaction";
 
 const Category = sequelize.define(
-	"Category",
+	"category",
 	{
 		id: {
 			type: DataTypes.INTEGER,

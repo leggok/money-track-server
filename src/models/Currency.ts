@@ -3,7 +3,7 @@ import { sequelize } from "../db/postgres";
 import Transaction from "./Transaction";
 
 const Currency = sequelize.define(
-	"Currency",
+	"currency",
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -25,10 +25,6 @@ const Currency = sequelize.define(
 		},
 		country: {
 			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		exchange_rate: {
-			type: DataTypes.DECIMAL(10, 4),
 			allowNull: false,
 		},
 		is_main: {

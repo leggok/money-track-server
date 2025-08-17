@@ -4,6 +4,15 @@ import CurrencyService from "../services/CurrencyService";
 export class CurrenciesController {
 	static async getAll(req: Request, res: Response): Promise<any> {
 		try {
+			const { update } = req.query;
+
+			if (update === "true") {
+				const currency = await CurrencyService.update();
+				if (!currency.success) {
+					return res.status(400).json({ message: currency.message, success: false });
+				}
+			}
+
 			const currencies = await CurrencyService.findAll();
 
 			if (!currencies.success) {
@@ -17,6 +26,21 @@ export class CurrenciesController {
 			});
 		} catch (error) {
 			console.error("Get all currencies error:", error);
+			return res.status(500).json({ message: "Internal Server Error", success: false });
+		}
+	}
+
+	static async update(req: Request, res: Response): Promise<any> {
+		try {
+			const currency = await CurrencyService.update();
+
+			if (!currency.success) {
+				return res.status(400).json({ message: currency.message, success: false });
+			}
+
+			return res.status(201).json({ message: currency.message, success: true });
+		} catch (error) {
+			console.error("Update currency error:", error);
 			return res.status(500).json({ message: "Internal Server Error", success: false });
 		}
 	}

@@ -1,6 +1,11 @@
 import { Currency } from "../models";
 import type { Currency as CurrencyType } from "../interfaces";
+import axios from "axios";
+import { CURRENCY_API_KEY } from "../config";
+import CurrencyHistory from "../models/CurrencyHistory";
+import { Model, Sequelize } from "sequelize";
 
+type CurrencyInstance = Model & CurrencyType;
 class CurrencyService {
 	static async findById(id: number) {
 		if (!id) {
@@ -35,8 +40,34 @@ class CurrencyService {
 
 	static async findAll() {
 		try {
-			const currencies = await Currency.findAll();
-
+			const currencies = await Currency.findAll({
+				attributes: [
+				  "id", "name", "code", "symbol", "country", "is_main",
+				  [
+					Sequelize.literal(`(
+					  SELECT ch.exchange_rate
+					  FROM currency_histories ch
+					  WHERE ch.currency_id = currency.id
+					  ORDER BY ch.date DESC
+					  LIMIT 1
+					)`),
+					"currency_value"
+				  ],
+				  [
+					Sequelize.literal(`(
+					  SELECT ch.date
+					  FROM currency_histories ch
+					  WHERE ch.currency_id = currency.id
+					  ORDER BY ch.date DESC
+					  LIMIT 1
+					)`),
+					"currency_date"
+				  ]
+				],
+			  });
+			  
+			  
+			  
 			if (!currencies) {
 				return {
 					message: "Currencies not found",
@@ -58,14 +89,13 @@ class CurrencyService {
 		}
 	}
 
-	static async create({ name, code, symbol, country, exchange_rate, is_main }: CurrencyType) {
+	static async create({ name, code, symbol, country, is_main }: CurrencyType) {
 		try {
 			const currency = await Currency.create({
 				name,
 				code,
 				symbol,
 				country,
-				exchange_rate,
 				is_main,
 			});
 
@@ -78,6 +108,28 @@ class CurrencyService {
 			console.error("Error while creating currency:", error);
 			return {
 				message: "Failed to create currency",
+				error,
+				success: false,
+			};
+		}
+	}
+
+	static async update() {
+		try {
+			const currencies = await Currency.findAll() as CurrencyInstance[];
+			const res = await axios.get(`https://v6.exchangerate-api.com/v6/${CURRENCY_API_KEY}/latest/USD`);
+			for (const currency of currencies) {
+				const currencyRate = res.data.conversion_rates[currency.code];
+				await CurrencyHistory.create({ currency_id: currency.id, date: new Date(), exchange_rate: currencyRate });
+			}
+			return {
+				message: "Currencies updated successfully",
+				success: true,
+			};
+		} catch (error) {
+			console.error("Error while updating currency:", error);
+			return {
+				message: "Failed to update currency",
 				error,
 				success: false,
 			};

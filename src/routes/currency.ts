@@ -5,4 +5,6 @@ const router = Router();
 
 router.get("/currencies", CurrenciesController.getAll);
 
+router.put("/currencies", CurrenciesController.update);
+
 export default router;
