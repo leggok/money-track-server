@@ -10,4 +10,5 @@ export interface UserType {
 	updatedAt?: Date;
 	createdAt?: Date;
 	total_budget: number;
+	main_currency_id: number;
 }

@@ -123,6 +123,7 @@ export class AuthController {
 				lastName: result.user.last_name,
 				username: result.user.username,
 				email: result.user.email,
+				main_currency_id: result.user.main_currency_id,
 			};
 
 			return res.status(200).json({

@@ -11,6 +11,7 @@ interface DefaultUserData {
 	email: string;
 	password: string;
 	refresh_token: string;
+	main_currency_id: number;
 }
 
 export const generateDefaultUserData = async (): Promise<DefaultUserData> => {
@@ -23,6 +24,7 @@ export const generateDefaultUserData = async (): Promise<DefaultUserData> => {
 		email: DEFAULT_USER_EMAIL as string,
 		password: hashedPassword,
 		refresh_token: "",
+		main_currency_id: 1,
 	};
 };
 
@@ -34,7 +36,8 @@ export async function createDefaultUsers() {
 			userData.last_name, 
 			userData.username, 
 			userData.email, 
-			userData.password
+			userData.password,
+			userData.main_currency_id,
 		);
 		
 		if (result.success) {

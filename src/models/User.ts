@@ -43,6 +43,14 @@ const User = sequelize.define(
 			allowNull: false,
 			defaultValue: 0,
 		},
+		main_currency_id: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			references: {
+				model: "currencies",
+				key: "id",
+			},
+		},
 	},
 	{
 		timestamps: true,

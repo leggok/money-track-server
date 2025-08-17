@@ -170,7 +170,7 @@ class UserService {
 		}
 	}
 
-	static async create(first_name: string, last_name: string, username: string, email: string, password: string): Promise<CreateUserResponse> {
+	static async create(first_name: string, last_name: string, username: string, email: string, password: string, main_currency_id: number = 1): Promise<CreateUserResponse> {
 		const existUser = await UserService.findByEmail(email);
 
 		if (existUser.success) {
@@ -191,6 +191,7 @@ class UserService {
 					last_name,
 					email,
 					password: hashedPassword,
+					main_currency_id,
 				})
 			).get({ plain: true }) as UserType;
 
