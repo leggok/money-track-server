@@ -1,4 +1,4 @@
-import { Transaction } from "../models";
+import { Transaction, Currency } from "../models";
 import type { Transaction as TransactionType } from "../interfaces";
 import UserService from "./UsersService";
 
@@ -11,7 +11,7 @@ class TransactionService {
 			};
 		}
 		try {
-			const transaction = await Transaction.findByPk(id);
+			const transaction = await Transaction.findByPk(id, { include: [Currency] });
 
 			if (!transaction) {
 				return {
@@ -36,7 +36,7 @@ class TransactionService {
 
 	static async findAll() {
 		try {
-			const transactions = await Transaction.findAll();
+			const transactions = await Transaction.findAll({ include: [Currency] });
 
 			if (!transactions) {
 				return {
@@ -92,7 +92,7 @@ class TransactionService {
 
 	static async findAllByUserId(user_id: number) {
 		try {
-			const transactions = await Transaction.findAll({ where: { user_id } });
+			const transactions = await Transaction.findAll({ where: { user_id }, include: [Currency] });
 
 			if (!transactions) {
 				return {
