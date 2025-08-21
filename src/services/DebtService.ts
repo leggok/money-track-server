@@ -1,4 +1,4 @@
-import type { Model, ModelStatic } from "sequelize";
+import { Op, type Model } from "sequelize";
 import { Debt as DebtType } from "../interfaces";
 import Debt from "../models/Debt";
 import Currency from "../models/Currency";
@@ -43,6 +43,27 @@ class DebtService {
             console.error("Error in add debt:", error);
             return {
                 message: error.message || "Error in add debt",
+                success: false
+            };
+        }
+    }
+
+    static async getAll(userId: number) {
+        try {
+            const debts = await Debt.findAll({
+                where: {
+                    [Op.or]: [{ lender_id: userId }, { borrower_id: userId }]
+                }
+            });
+
+            return {
+                debts,
+                success: true
+            };
+        } catch (error: any) {
+            console.error("Error in get all debts:", error);
+            return {
+                message: error.message || "Error in get all debts",
                 success: false
             };
         }

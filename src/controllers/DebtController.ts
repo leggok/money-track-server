@@ -40,6 +40,26 @@ export class DebtController {
             }
 
             return res.status(201).json(debt.debt);
-        } catch (error) {}
+        } catch (error) {
+            console.error("Error in add debt:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+
+    static async getAll(req: Request, res: Response): Promise<any> {
+        try {
+            const { id: userId } = req.user as { id: number };
+
+            const debt = await DebtService.getAll(userId);
+
+            if (!debt.success) {
+                return res.status(400).json({ message: debt.message });
+            }
+
+            return res.status(200).json(debt.debts);
+        } catch (error) {
+            console.error("Error in add debt:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
     }
 }
