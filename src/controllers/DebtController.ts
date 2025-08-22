@@ -10,6 +10,7 @@ export class DebtController {
                 description,
                 currency_id,
                 lender_id,
+                lender_name,
                 borrower_id,
                 status,
                 timestamp,
@@ -17,7 +18,7 @@ export class DebtController {
                 paid_at
             } = req.body;
 
-            if (userId !== lender_id && userId !== borrower_id) {
+            if (lender_id && userId !== lender_id && userId !== borrower_id) {
                 return res
                     .status(403)
                     .json({ message: "You are not allowed to add debt for this user" });
@@ -28,6 +29,7 @@ export class DebtController {
                 description,
                 currency_id,
                 lender_id,
+                lender_name,
                 borrower_id,
                 status,
                 timestamp,
@@ -39,7 +41,11 @@ export class DebtController {
                 return res.status(400).json({ message: debt.message });
             }
 
-            return res.status(201).json(debt.debt);
+            return res.status(201).json({
+                message: debt.message,
+                success: true,
+                debts: debt.debt
+            });
         } catch (error) {
             console.error("Error in add debt:", error);
             return res.status(500).json({ message: "Internal server error" });

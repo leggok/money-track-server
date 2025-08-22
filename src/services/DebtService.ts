@@ -12,6 +12,7 @@ class DebtService {
         description,
         currency_id,
         lender_id,
+        lender_name,
         borrower_id,
         status,
         timestamp,
@@ -19,21 +20,35 @@ class DebtService {
         paid_at
     }: DebtType) {
         try {
+            // at least one of lender_id or borrower_id must be provided
+            if (!lender_id && !borrower_id) {
+                throw new Error("Either lender_id or borrower_id must be provided");
+            }
             await checkExistingDataInDB(Currency, currency_id, "Currency");
-            await checkExistingDataInDB(User, lender_id, "Lender");
-            await checkExistingDataInDB(User, borrower_id, "Borrower");
+            if (lender_id) {
+                await checkExistingDataInDB(User, lender_id, "Lender");
+            }
+            if (borrower_id) {
+                await checkExistingDataInDB(User, borrower_id, "Borrower");
+            }
 
-            const debt = await Debt.create({
+            const debtData: any = {
                 value,
                 description,
                 currency_id,
-                lender_id,
+                lender_name: lender_name || "",
                 borrower_id,
                 status,
                 timestamp,
                 due_at,
                 paid_at
-            });
+            };
+
+            if (lender_id) {
+                debtData.lender_id = lender_id;
+            }
+
+            const debt = await Debt.create(debtData);
 
             return {
                 debt,
